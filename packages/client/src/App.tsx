@@ -5,10 +5,17 @@ import { getFetch } from '@trpc/client';
 import { trpc } from './utils/trpc';
 import { loggerLink } from '@trpc/client/links/loggerLink';
 import { httpBatchLink } from '@trpc/client/links/httpBatchLink';
+import { useRoutes } from 'react-router-dom';
+import routes from './router';
+import { BrowserRouter as Router } from 'react-router-dom';
+import AuthMiddleware from './middleware/AuthMiddleware';
+import { ToastContainer } from 'react-toastify';
+import './global.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 function AppContent() {
-  const hello = trpc.useQuery(['hello']);
-  return <main className='p-2'>{JSON.stringify(hello.data, null, 2)}</main>;
+  const content = useRoutes(routes);
+  return content;
 }
 
 function App() {
@@ -45,8 +52,13 @@ function App() {
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <AppContent />
-        <ReactQueryDevtools initialIsOpen={false} />
+        <Router>
+          <AuthMiddleware>
+            <AppContent />
+          </AuthMiddleware>
+          <ToastContainer />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </Router>
       </QueryClientProvider>
     </trpc.Provider>
   );

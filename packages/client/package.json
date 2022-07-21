@@ -9,13 +9,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^2.9.6",
     "@trpc/client": "^9.26.2",
     "@trpc/react": "^9.26.2",
     "@trpc/server": "^9.26.2",
     "react": "^18.2.0",
+    "react-cookie": "^4.1.1",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.33.1",
     "react-query": "3",
-    "server": "1.0.0"
+    "react-router-dom": "^6.3.0",
+    "react-toastify": "^9.0.7",
+    "server": "1.0.0",
+    "tailwind-merge": "^1.5.1",
+    "zod": "^3.17.9",
+    "zustand": "^4.0.0-rc.4"
   },
   "devDependencies": {
     "@types/react": "^18.0.15",

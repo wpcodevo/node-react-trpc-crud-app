@@ -120,7 +120,7 @@ const logout = ({ ctx }: { ctx: Context }) => {
 export const refreshAccessTokenHandler = async ({ ctx }: { ctx: Context }) => {
   try {
     // Get the refresh token from cookie
-    const refresh_token = ctx.req.cookies.refresh_token as string;
+    const refresh_token = ctx.req.cookies?.refresh_token as string;
 
     const message = 'Could not refresh access token';
     if (!refresh_token) {

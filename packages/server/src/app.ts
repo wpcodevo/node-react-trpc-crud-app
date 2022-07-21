@@ -17,6 +17,7 @@ import {
   registerHandler,
 } from './controllers/auth.controller';
 import { getMeHandler } from './controllers/user.controller';
+import cookieParser from 'cookie-parser';
 
 process.on('uncaughtException', (err) => {
   console.log(err);
@@ -78,6 +79,7 @@ export type AppRouter = typeof appRouter;
 const app = express();
 if (process.env.NODE_ENV !== 'production') app.use(morgan('dev'));
 
+app.use(cookieParser());
 app.use(
   cors({
     origin: [customConfig.origin, 'http://localhost:3000'],
