@@ -9,6 +9,8 @@
     "db:push": "npx prisma db push"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/jsonwebtoken": "^8.5.8",
     "@types/morgan": "^1.9.3",
     "morgan": "^1.10.0",
     "prisma": "^4.1.0",
@@ -18,9 +20,12 @@
   "dependencies": {
     "@prisma/client": "^4.1.0",
     "@trpc/server": "^9.26.2",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "redis": "^4.2.0"
+    "jsonwebtoken": "^8.5.1",
+    "redis": "^4.2.0",
+    "zod": "^3.17.9"
   }
 }

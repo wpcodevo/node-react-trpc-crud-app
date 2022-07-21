@@ -3,6 +3,8 @@ import { QueryClientProvider, QueryClient } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { getFetch } from '@trpc/client';
 import { trpc } from './utils/trpc';
+import { loggerLink } from '@trpc/client/links/loggerLink';
+import { httpBatchLink } from '@trpc/client/links/httpBatchLink';
 
 function AppContent() {
   const hello = trpc.useQuery(['hello']);
@@ -20,9 +22,17 @@ function App() {
         },
       })
   );
+  const url = 'http://localhost:8000/api/trpc';
+  const links = [
+    loggerLink(),
+    httpBatchLink({
+      maxBatchSize: 10,
+      url,
+    }),
+  ];
   const [trpcClient] = useState(() =>
     trpc.createClient({
-      url: 'http://localhost:8000/api/trpc',
+      links,
       fetch: async (input, init?) => {
         const fetch = getFetch();
         return fetch(input, {
