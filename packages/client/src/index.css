@@ -4,8 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  html {
+html{
     font-family: 'Poppins', sans-serif;
-  }
+}
+
+body{
+    background-color: #88abff;
 }

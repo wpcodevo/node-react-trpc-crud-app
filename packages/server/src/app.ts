@@ -1,103 +1,68 @@
-import path from 'path';
-import dotenv from 'dotenv';
-import express from 'express';
-import morgan from 'morgan';
-import cors from 'cors';
-import * as trpc from '@trpc/server';
-import * as trpcExpress from '@trpc/server/adapters/express';
-import redisClient from './utils/connectRedis';
-import customConfig from './config/default';
-import connectDB from './utils/prisma';
-import { deserializeUser } from './middleware/deserializeUser';
-import { createUserSchema, loginUserSchema } from './schema/user.schema';
+import express from "express";
+import morgan from "morgan";
+import cors from "cors";
+import { initTRPC } from "@trpc/server";
+import * as trpcExpress from "@trpc/server/adapters/express";
+import { PrismaClient } from "@prisma/client";
 import {
-  loginHandler,
-  logoutHandler,
-  refreshAccessTokenHandler,
-  registerHandler,
-} from './controllers/auth.controller';
-import { getMeHandler } from './controllers/user.controller';
-import cookieParser from 'cookie-parser';
+  createNoteSchema,
+  filterQuery,
+  params,
+  updateNoteSchema,
+} from "./note.schema";
+import {
+  createNoteController,
+  deleteNoteController,
+  findAllNotesController,
+  findNoteController,
+  updateNoteController,
+} from "./note.controller";
 
-process.on('uncaughtException', (err) => {
-  console.log(err);
+export const prisma = new PrismaClient();
+const t = initTRPC.create();
+
+const appRouter = t.router({
+  getHello: t.procedure.query((req) => {
+    return { message: "Welcome to Full-Stack tRPC CRUD App" };
+  }),
+  createNote: t.procedure
+    .input(createNoteSchema)
+    .mutation(({ input }) => createNoteController({ input })),
+  updateNote: t.procedure
+    .input(updateNoteSchema)
+    .mutation(({ input }) =>
+      updateNoteController({ paramsInput: input.params, input: input.body })
+    ),
+  deleteNote: t.procedure
+    .input(params)
+    .mutation(({ input }) => deleteNoteController({ paramsInput: input })),
+  getNote: t.procedure
+    .input(params)
+    .query(({ input }) => findNoteController({ paramsInput: input })),
+  getNotes: t.procedure
+    .input(filterQuery)
+    .query(({ input }) => findAllNotesController({ filterQuery: input })),
 });
-
-dotenv.config({ path: path.join(__dirname, './.env') });
-
-const createContext = ({ req, res }: trpcExpress.CreateExpressContextOptions) =>
-  deserializeUser({ req, res });
-
-export type Context = trpc.inferAsyncReturnType<typeof createContext>;
-
-function createRouter() {
-  return trpc.router<Context>();
-}
-
-const authRouter = createRouter()
-  .mutation('register', {
-    input: createUserSchema,
-    resolve: ({ input }) => registerHandler({ input }),
-  })
-  .mutation('login', {
-    input: loginUserSchema,
-    resolve: async ({ input, ctx }) => await loginHandler({ input, ctx }),
-  })
-  .mutation('logout', {
-    resolve: ({ ctx }) => logoutHandler({ ctx }),
-  })
-  .query('refresh', {
-    resolve: ({ ctx }) => refreshAccessTokenHandler({ ctx }),
-  });
-
-const userRouter = createRouter()
-  .middleware(async ({ ctx, next }) => {
-    if (!ctx.user) {
-      throw new trpc.TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'You must be logged in to access this resource',
-      });
-    }
-    return next();
-  })
-  .query('me', {
-    resolve: ({ ctx }) => getMeHandler({ ctx }),
-  });
-
-const appRouter = createRouter()
-  .query('hello', {
-    resolve: async () => {
-      const message = await redisClient.get('tRPC');
-      return { message };
-    },
-  })
-  .merge('auth.', authRouter)
-  .merge('users.', userRouter);
 
 export type AppRouter = typeof appRouter;
 
 const app = express();
-if (process.env.NODE_ENV !== 'production') app.use(morgan('dev'));
+if (process.env.NODE_ENV !== "production") app.use(morgan("dev"));
 
-app.use(cookieParser());
 app.use(
   cors({
-    origin: [customConfig.origin, 'http://localhost:3000'],
+    origin: ["http://localhost:3000"],
     credentials: true,
   })
 );
 app.use(
-  '/api/trpc',
+  "/api/trpc",
   trpcExpress.createExpressMiddleware({
     router: appRouter,
-    createContext,
   })
 );
 
-const port = customConfig.port;
+const port = 8000;
 app.listen(port, () => {
   console.log(`🚀 Server listening on port ${port}`);
-
-  // CONNECT DB
-  connectDB();
 });

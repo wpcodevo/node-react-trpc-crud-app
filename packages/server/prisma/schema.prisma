@@ -3,30 +3,19 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-
-model User{
-  @@map(name: "users")
-
-  id String  @id @default(uuid())
-  name String  @db.VarChar(255)
-  email String @unique
-  photo String? @default("default.png")
-  verified Boolean? @default(false) 
-  
-  password String
-  role RoleEnumType? @default(user)
+model Note {
+  id        String   @id @default(uuid())
+  title     String
+  content   String   @unique
+  category  String?
+  published Boolean? @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  provider String?
-}
-
-enum RoleEnumType {
-  user
-  admin
+  @@map(name: "notes")
 }
