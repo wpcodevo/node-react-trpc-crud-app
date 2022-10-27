@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { format, parseISO } from "date-fns";
 import { twMerge } from "tailwind-merge";
 import NoteModal from "../note.modal";
