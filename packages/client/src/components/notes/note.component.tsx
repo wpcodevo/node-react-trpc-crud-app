@@ -58,7 +58,7 @@ const NoteItem: FC<NoteItemProps> = ({ note }) => {
         </div>
         <div className="relative border-t border-slate-300 flex justify-between items-center">
           <span className="text-ct-dark-100 text-sm">
-            {format(parseISO(note.createdAt), "PPP")}
+            {format(parseISO(String(note.createdAt)), "PPP")}
           </span>
           <div
             onClick={() => setOpenSettings(!openSettings)}

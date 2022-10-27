@@ -14,6 +14,7 @@ function AppContent() {
   const { data: notes } = trpc.getNotes.useQuery(
     { limit: 10, page: 1 },
     {
+      staleTime: 5 * 1000,
       select: (data) => data.notes,
       onError(err) {
         toast(err.message, {
