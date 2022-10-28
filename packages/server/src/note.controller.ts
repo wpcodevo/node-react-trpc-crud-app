@@ -94,7 +94,6 @@ export const findNoteController = async ({
       note,
     };
   } catch (error) {
-    console.log(error);
     throw error;
   }
 };
@@ -127,7 +126,6 @@ export const deleteNoteController = async ({
   paramsInput: ParamsInput;
 }) => {
   try {
-    console.log(paramsInput.noteId);
     await prisma.note.delete({ where: { id: paramsInput.noteId } });
 
     return {

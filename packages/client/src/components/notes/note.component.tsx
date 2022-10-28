@@ -28,7 +28,6 @@ const NoteItem: FC<NoteItemProps> = ({ note }) => {
     },
     onError(error) {
       setOpenNoteModal(false);
-      console.log(error);
       toast(error.message, {
         type: "error",
         position: "top-right",
